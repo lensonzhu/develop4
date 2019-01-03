@@ -11,3 +11,10 @@ print('hello,world')
   a  |  b  |   c   |
 -----|-----|-------|
 
+
+'''py
+def index():
+    return 1+1
+'''
+
+
