@@ -6,12 +6,11 @@
 {% block page_content %}
 <div class="page-header">
     <h1>
-        Hello ,{% if name %}{{ name }}
-    </h1>
-    <p>Nice to meet you</p>
-    {% else %}Stranger
-    <p>Happy to see you again</p>
+        Nice to meet you ,{% if current_user.is_authenticated %}{{ current_username }}
+        <p>Happy to see you again</p>
+        {% else %}Stranger
         {% endif %}
+    </h1>
 </div>
 {% endblock %}
 {# hhehe #}
