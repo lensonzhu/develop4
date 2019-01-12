@@ -6,6 +6,16 @@ from flask_login import login_user,logout_user,login_required,current_user
 from .. import db
 from .. email import send_email
 
+
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated \
+            and not current_user.confirmed \
+            and request.endpoint \
+            and request.endpoint[:5] != 'auth.' \
+            and request.endpoint != 'static':
+        return redirect(url_for('auth.unconfirmed'))
+
 @auth.route('/login',methods=['GET','POST'])
 def login():
     form=LoginForm()
@@ -18,6 +28,32 @@ def login():
         flash('Invalid username or password.')
         print('username////////',user)
     return render_template('auth/login.html',form=form)
+
+
+@auth.route('/unconfirmed')
+def unconfirmed():
+    if current_user.is_anonymous or current_user.confirmed:
+        return redirect(url_for('main.index'))
+    return render_template('auth/unconfirmed.html')
+
+@auth.route('/confirm')
+@login_required
+def confirm(token):
+    if current_user.confirmed:
+        return redirect(url_for('main.index'))
+    if current_user.confirm(token):
+        flash('You have confirmed your account')
+    else:
+        flash('Is ivalid has expired')
+    return redirect(url_for('main.index'))
+
+@auth.route('/confirm')
+@login_required
+def resend_confirmation():
+    token=current_user.generate_confirmation_token()
+    send_email(current_user.email,'Confirm your account','auth/email/confirm',user=current_user,token=token)
+    flash('A new confirm email has been sent you by email')
+    return redirect(url_for('main.index'))
 
 
 @auth.route('/logout')
