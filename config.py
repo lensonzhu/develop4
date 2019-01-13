@@ -10,7 +10,7 @@ class Config:
 
     MAIL_SERVER='smtp.163.com'
     MAIL_PORT=25
-    MAIL_USE_TLS=True
+    MAIL_USE_TLS=False
     MAIL_USERNAME=os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD=os.environ.get('MAIL_PASSWORD')
 

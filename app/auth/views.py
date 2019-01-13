@@ -5,7 +5,7 @@ from . forms import LoginForm,RegisterForm
 from flask_login import login_user,logout_user,login_required,current_user
 from .. import db
 from .. email import send_email
-
+from flask import request
 
 @auth.before_app_request
 def before_request():
@@ -36,7 +36,7 @@ def unconfirmed():
         return redirect(url_for('main.index'))
     return render_template('auth/unconfirmed.html')
 
-@auth.route('/confirm')
+@auth.route('/confirm/<token>')
 @login_required
 def confirm(token):
     if current_user.confirmed:
@@ -69,7 +69,10 @@ def register():
     if form.validate_on_submit():
         user=User(email=form.email.data,password=form.password.data,username=form.username.data)
         db.session.add(user)
-        flash('You can now login')
+        db.session.commit()
+        token=user.generate_confirmation_token()
+        send_email(user.email,'Confirm Your account','auth/email/confirm',user=user,token=token,)
+        flash('You can now login, But you must be active your email ')
         print('user======',user)
         return redirect(url_for('auth.login'))
     print('user-------',form)
