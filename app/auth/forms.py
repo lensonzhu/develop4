@@ -5,6 +5,40 @@ from wtforms import ValidationError
 from ..models import User
 
 
+class ChangeEmailForm(FlaskForm):
+    email=StringField('New email',validators=[Required(),Length(1,64),Email()])
+    password=PasswordField('password',validators=[Required()])
+    submit=SubmitField('Update Email')
+
+    def validate_email(self,field):
+        if User.query.filter_by(email=fielf.data).first():
+            raise ValidationError('Email already registered')
+
+
+class ResetPasswordRequestForm(FlaskForm):
+    email=StringField('Email',validators=[Required(),Length(1,64),Email()])
+    submit=SubmitField('Fuck you Reset password')
+
+
+
+class ResetPasswordForm(FlaskForm):
+    email=StringField('Email',validators=[Required(),Length(1,64),Email()])
+    password=PasswordField('New password',validators=[Required(),EqualTo('password2',message='PasswordField must be match')])
+    password2=PasswordField('Confirm password')
+    submit=SubmitField('Reset password')
+
+    def validate_email(self,field):
+        if User.query.filter_by(email=Field.data).first():
+            raise ValidationError('Unknown email address')
+
+
+class ChangePasswordForm(FlaskForm):
+    old_password=PasswordField('Old password',validators=[Required()])
+    password=PasswordField('New password',validators=[Required(),EqualTo('password2',message='Password must be match')])
+    password2=PasswordField('Confirm new password')
+    submit=SubmitField('Fuck Change PSD')
+
+
 class LoginForm(FlaskForm):
     email=StringField('Email',validators=[Required(),Length(1,64),Email()])
     password=PasswordField('Password',validators=[Required()])
